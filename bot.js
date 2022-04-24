@@ -1,14 +1,14 @@
 const { Collection, Client } = require("discord.js");
 const Database = require("./Helpers/Database");
 const client = global.client;
-const { MessageEmbed } = require("discord.js")
+const { MessageEmbed } = require("discord.js");
 
 //#region Invite Manager
 const Invites = new Collection();
 
 //#region Load
 client.on("ready", () => {
-    client.user.setActivity("Crée par Nitomi", {
+    client.user.setActivity("POIZON", {
         type: "STREAMING",
         url: "https://www.twitch.tv/gotaga"
       }); 
@@ -23,7 +23,7 @@ client.on('message', message => {
     if(message.content === "-help") {
     let embed = new MessageEmbed()
     .setTitle("Liste des commandes")
-    .setDescription("-Bonus <member> <value>\n -Me: Pour voir le nombre d'invitations que tu as ! \n -options <type> <value> \n -reward <roleId> <count> \n-top")
+    .setDescription("Me: Pour voir le nombre d'invitations que tu as !\n Top: Pour voir le classement")
     .setColor("RANDOM")
     message.channel.send(embed)
     }
@@ -96,10 +96,23 @@ client.on("guildMemberAdd", (member) => {
         }
     }).catch();
 });
-
+client.on('message', message => {
+    if (message.content === '--ping') {  
+      message.channel.send(`🏓La latence est de ${Date.now() - message.createdTimestamp}ms. La latence de l'API est de ${Math.round(client.ws.ping)}ms`);
+    }
+  });
+  client.on('message', message => {
+    if(message.content === "--help") {
+    let embed = new MessageEmbed()
+    .setTitle("Le Bled")
+    .setDescription("-Bonus <member> <value>\n-Me: Pour voir le nombre d'invitations que tu as !\n-Options <type> <value>\n-Reward <roleId> <count>\n-Top")
+    .setColor("RANDOM")
+    message.channel.send(embed)
+    }
+    });
 client.on("guildMemberRemove", (member) => {
     const db = new Database("./Servers/" + member.guild.id, "Invites"), settings = new Database("./Servers/" + member.guild.id, "Settings").get("settings") || {};
-    var total = 0, bonus = 0, regular = 0, fakecount = 0, channel = member.guild.channels.cache.get(settings.Channel), content = settings.leaveMessage ? settings.leaveMessage : `${member} is left the server.`, data = db.get(`invites.${member.id}`);
+    var total = 0, bonus = 0, regular = 0, fakecount = 0, channel = member.guild.channels.cache.get(settings.Channel), content = settings.leaveMessage ? settings.leaveMessage : `${member} à quitté le serveur.`, data = db.get(`invites.${member.id}`);
     if(!data){
         if(channel){
             content = content
@@ -153,4 +166,4 @@ global.onUpdateInvite = (guildMember, guild, total) => {
 //#endregion
 //#endregion
 
-client.login(process.env.TOKEN);
+client.login(global.Settings.Token);;
